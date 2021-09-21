@@ -1,0 +1,42 @@
+<html>
+<body>
+    <h1>Sentiment Analysis</h1>
+    {% if not sentiments %}
+        <form enctype = "multipart/form-data" action = "/uploader" method = "post">
+        <p>Upload File: <input type = "file" name="file" accept=".json"/></p>
+        <p><input type = "submit" value = "Upload" /></p>
+        <hr>
+        </form>
+        <h2>Uploaded Files:</h2>
+        <ol>
+            {% for file in files %}
+                <li>{{ file }}</li>
+            {% endfor %}
+        </ol>
+        <hr>
+        {% if files %}
+            <form enctype = "multipart/form-data" action = "/get-sentiment-analysis" method = "post">
+                <p><input type = "submit" value = "Get Sentiment Analysis" name="sentiment"/></p>
+            </form>
+        {% endif %}
+    {% else %}
+        {% for key, sentiment in sentiments.items() %}
+            <ol>
+                <span>File: <b>{{ key }}</b></span>
+            {% for k, raw in sentiment.items() %}
+                <div>Ticket ID: {{ k }}</div>
+                {% for value in raw['sentiments'] %}
+                    <li>Sentiment: {{ value.sentiment }}, Probability: {{ value.probability }}</li>
+                {% endfor %}
+            {% endfor %}
+            <hr>
+            </ol>
+        {% endfor %}
+        {% if notification == 1 %}
+            <h3>Email sent successfully.</h3>
+        {% else %}
+            <h3>Email not sent, Pleae check with administrator.</h3>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
