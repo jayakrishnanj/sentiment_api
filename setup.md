@@ -1,14 +1,39 @@
-Install pip via homebrew
+Clone the repo:
+---------------
+1. Git clone git@github.com:jayakrishnanj/sentiment_api.git
+2. Go to sentiment_api folder
 
-python3 -m pip install --upgrade pip
+Setting up local Environment for notification
+---------------------------------------------
+1. Create `.env` file in sentiment_api folder
+2. Add `EMAIL` and `KEY` for notification: https://support.google.com/mail/answer/185833?hl=en
+    Ex.: EMAIL="xyz@gmail.com"
+        KEY="abcd"
 
-pip3 install uvicorn
+Install dependecies manually:
+-----------------------------
 
-/Library/Frameworks/Python.framework/Versions/3.9/bin/python3 -m pip install -U black --user
-10035* cd python
-python3 main.py
-install transformers
-pip3 install tensorflow
-pip3 install torch torchvision
-python3 test_model.py "Search is working not good"
-uvicorn main:app --reload
+Install python3 and pip3 via homebrew
+
+Install all the dependencies:
+
+Run `pip3 install -r requirements.txt`
+
+Run the app.
+
+1. Go to app folder
+2. Run `python3 main.py`
+
+Install and Run using docker:
+-----------------------------
+1. Make sure docker is install in system and running
+2. Go to sentiment_api folder
+3. Run `docker build -t sentiment-app:latest .`
+4. Run `docker run -it sentiment-app`
+5. Run app in docker container `docker run -it -d -p 8000:8000 sentiment-app`
+6. Run `docker stop` to exit.
+
+
+Note: Email notification
+------------------------
+There is one config available to disable the email notification for actual users. use `DEVELOPMENT_MODE` to `True` if you are using the app in development mode.
