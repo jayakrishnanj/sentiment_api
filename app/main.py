@@ -19,7 +19,10 @@ def get_root():
 
 @app.route('/sentiment-application')
 def index_file():
-    files = os.listdir(config.UPLOAD_PATH)
+    try:
+     files = os.listdir(config.UPLOAD_PATH)
+    except:
+     files = [] 
     return render_template('index.html', files=files)
 	
 @app.route('/uploader', methods = ['POST'])
