@@ -7,7 +7,7 @@
         <div style="padding:20px 0px">
             <div style="height: 500px;width:400px">
                 <div style="text-align:center;">
-                    <div>Ticket ID: {{ data.ticket_id }}</div>
+                    <div>Ticket ID: <a href="{{ data.url }}">{{ data.ticket_id }}</a></div>
                     <div>SEVERITY: {{ data.severity }}</div>
                     <div>STATUS: {{ data.status }}</div>
                     <div>SYNOPSIS: {{ data.description }}}</div>
