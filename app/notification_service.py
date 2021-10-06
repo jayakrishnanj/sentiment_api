@@ -27,6 +27,7 @@ def notify():
             email_values['description'] = file_data[api_config['description']]
             email_values['status'] = file_data[api_config['status']]
             email_values['severity'] = value['sentiments'][0]['sentiment']
+            email_values['url'] = api_config['tiket_url'] + ticket_id
             if email_values['severity'] in email_mapping:
                 to.append(email_mapping[email_values['severity']])
                 subject = '[' + email_values['severity'] + '] : Sentiment App notification'
