@@ -393,8 +393,9 @@
                       <thead>
                         <tr>
                           <th scope="col">#</th>
-                          <th scope="col">Ticket ID</th>
-                          <th scope="col">Probability</th>
+                          <th scope="col">Ticket</th>
+                          <th scope="col">Label</th>
+                          <th scope="col">Likeli to escalate</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -403,7 +404,8 @@
                         <tr>
                           <th scope="row">{{ count.value }}</th>
                           <td>{{ k }}</td>
-                          <td>{{ raw['sentiments'][0]['probability'] }}</td>
+                          <td>{{ raw['sentiments'][0]['label'] }}</td>
+                          <td>{{ "{0:.0%}".format(raw['sentiments'][0]['probability']) }}</td>
                         </tr>
                         {% set count.value = count.value + 1 %}
                       {% endfor %}
@@ -427,11 +429,11 @@
                 <h3>Escalation Prediction Dashboard</h3>
                 <div class="indications">
                   <label>Escalation Indications:</label>
-                  <div class="heading-Sev1">Sev1</div>
-                  <div class="heading-Sev2">Sev2</div>
-                  <div class="heading-Sev3">Sev3</div>
-                  <div class="heading-Sev4">Sev4</div>
-                  <div class="heading-Sev5">Sev5</div>
+                  <div class="heading-Sev1">Very Negative</div>
+                  <div class="heading-Sev2">Negative</div>
+                  <div class="heading-Sev3">Neutral</div>
+                  <div class="heading-Sev4">Positive</div>
+                  <div class="heading-Sev5">Very Positive</div>
                 </div>
                 <div class="row dashboard">
                   <div class="col-md-2">Case Number</div>
@@ -448,7 +450,7 @@
                           <div class="panel-heading heading-{{ raw['sentiments'][0]['sentiment'] }}" role="tab" id="heading{{ k }}">
                             <h4 class="panel-title">
                               <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ k }}" aria-expanded="false" aria-controls="collapse{{ k }}" class="collapsed">
-                                <div class="col-md-2">{{ k }}</div>
+                                <div class="col-md-2"><a target="_blank" href="{{ api_config['tiket_url'] + k }}">{{ k }}</a></div>
                                 <div class="col-md-4">{{ values[k]['title'] }}</div>
                                 <div class="col-md-2">{{ values[k]['created_date'] }}</div>
                                 <div class="col-md-2">{{ values[k]['email'] }}</div>
