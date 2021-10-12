@@ -21,6 +21,7 @@ def data():
                 for v in value:
                     result[file_key][key]['sentiments'].insert(i, analyze_sentiment(v))
                     i = i + 1
+                # sorted = sorted(result[file_key][key]['sentiments'].items(), key=lambda x: x[1]) 
     except Exception as e:
         result = str(e)
     return json.dumps(result)
@@ -33,18 +34,24 @@ def analyze_sentiment(text):
     result = nlp(text)
 
     sent = ''
+    label = ''
     if (result[0]['label'] == '1 star'):
         sent = 'Sev1'
+        label = 'Very Negative'
     elif (result[0]['label'] == '2 star'):
         sent = 'Sev2'
+        label = 'Negative'
     elif (result[0]['label'] == '3 stars'):
         sent = 'Sev3'
+        label = 'Neutral'
     elif (result[0]['label'] == '4 stars'):
         sent = 'Sev4'
+        label = 'Positive'
     else:
         sent = 'Sev5'
+        label = 'Very Positive'
 
     prob = result[0]['score']
 
     # Format and return results
-    return {'sentiment': sent, 'probability': prob}
+    return {'sentiment': sent, 'probability': prob, 'label': label}

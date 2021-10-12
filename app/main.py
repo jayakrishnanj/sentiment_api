@@ -53,9 +53,10 @@ def analyse_result():
                 'file_data': json.dumps(result['data']),
                 'api': result['api']
             }
+            api_config = config.API_CONFIG[result['api']]
             values = format_result(payload)
             notification_response = requests.post(request.host_url + 'send-notification', data = payload)
-    return render_template('index.html', values = values, sentiments=json.loads(response.content), notification = 1, step=2, files = files)
+    return render_template('index.html', values = values, sentiments=json.loads(response.content), notification = 1, step=2, files = files, api_config=api_config)
 
 def format_result(payload):
     jsonObject = json.loads(payload['data'])
