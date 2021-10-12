@@ -275,7 +275,7 @@
       .indications {
         text-align: right;
         font-weight: bold;
-        font-size: 15px;
+        font-size: 13px;
       }
       .indications>div {
         display: inline;
@@ -395,7 +395,7 @@
                           <th scope="col">#</th>
                           <th scope="col">Ticket</th>
                           <th scope="col">Label</th>
-                          <th scope="col">Likeli to escalate</th>
+                          <th scope="col">Likely to escalate</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -403,7 +403,7 @@
                       {% for k, raw in sentiment.items() %}
                         <tr>
                           <th scope="row">{{ count.value }}</th>
-                          <td>{{ k }}</td>
+                          <td><a target="_blank" href="{{ api_config['tiket_url'] + k }}">{{ k }}</a></td>
                           <td>{{ raw['sentiments'][0]['label'] }}</td>
                           <td>{{ "{0:.0%}".format(raw['sentiments'][0]['probability']) }}</td>
                         </tr>
@@ -450,7 +450,7 @@
                           <div class="panel-heading heading-{{ raw['sentiments'][0]['sentiment'] }}" role="tab" id="heading{{ k }}">
                             <h4 class="panel-title">
                               <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ k }}" aria-expanded="false" aria-controls="collapse{{ k }}" class="collapsed">
-                                <div class="col-md-2"><a target="_blank" href="{{ api_config['tiket_url'] + k }}">{{ k }}</a></div>
+                                <div class="col-md-2">{{ k }}</div>
                                 <div class="col-md-4">{{ values[k]['title'] }}</div>
                                 <div class="col-md-2">{{ values[k]['created_date'] }}</div>
                                 <div class="col-md-2">{{ values[k]['email'] }}</div>
