@@ -1,4 +1,4 @@
-Clone the repo:
+Clone the repo
 ---------------
 1. Git clone git@github.com:jayakrishnanj/sentiment_api.git
 2. Go to sentiment_api folder
@@ -15,10 +15,10 @@ Create Upload folder
 Create upload folder in app folder. `Note:` This is temporary, it will be fixed in future release.
 
 
-There are two ways you can install application:
+There are two ways you can install application
 ===============================================
 
-Manual Approach: Install dependecies manually:
+Manual Approach: Install dependecies manually
 ----------------------------------------------
 Install python3 and pip3 via homebrew
 
@@ -31,7 +31,7 @@ Run the app.
 1. Go to app folder
 2. Run `python3 main.py`
 
-Docker Approach: Install and Run using docker:
+Docker Approach: Install and Run using docker
 -----------------------------
 1. Make sure docker is install in system and running
 2. Go to sentiment_api folder
