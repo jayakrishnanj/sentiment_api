@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:v="urn:schemas-microsoft-com:vml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <title>Sentiment Analysis Application Notification</title>
+        <style type="text/css">
+            .wizard {
+                background: #f1f1f1;
+                padding: 30px;
+            }
+            .wizard .nav-tabs {
+                position: relative;
+                border: 0px;
+            }
+            .wizard > div.wizard-inner {
+                position: relative;
+            }
+            .connecting-line{
+                height:15px;
+                background: #e0e0e0;
+                position: absolute;
+                width: 99.5%;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                top:44%;
+                z-index: 1;
+                border-radius: 15px;
+            }
+            .active-line{
+                height:15px;
+                background: #e0e0e0;
+                position: absolute;
+                width: 99.5%;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                top:44%;
+                z-index: 1;
+                border-radius: 15px !important;
+            }
+            .active .connecting-line{
+                background-color: #2ED4E0;
+            }
+            .border-right{
+                border-radius: 15px 0 0 15px;
+            }
+            .border-left{
+                border-radius: 0;
+            }
+            .wizard .nav-tabs > li.active > a, .wizard .nav-tabs > li.active > a:hover, .wizard .nav-tabs > li.active > a:focus {
+                cursor: default;
+                border: 0;
+                color:#2ED4E0;
+                border-bottom-color: transparent;
+            }
+            .nav-tabs li p{
+                padding-top:70px;
+                font-size: 16px;
+                text-align: center;
+            }
+            .list-inline{
+                text-align: center;
+            }
+            span.round-tab {
+                width: 70px;
+                height: 70px;
+                line-height: 70px;
+                display: inline-block;
+                border-radius: 100px;
+                background:#DFE3E4;
+                border: 2px solid #fff;
+                z-index:1;
+                position:absolute;
+                text-align: center;
+                font-size: 25px;
+            }
+            .wizard li.active span.round-tab{
+                background:#2ED4E0;
+                color:white;
+                border: 2px solid #fff;
+            }
+            span.round-tab:hover{
+                color: white;
+                border: 2px solid #fff;
+                background-color:#2ED4E0;
+            }
+            .wizard .nav-tabs > li {
+                width: 33.33%;
+            }
+            .wizard .nav-tabs > li a{
+                width: 70px;
+                height: 70px;
+                margin: 20px auto;
+                border-radius: 100%;
+                padding: 0;
+                color: #777;
+            }
+            .wizard .tab-pane {
+                position: relative;
+                padding-top: 15px;
+                border-top: 1px solid #fff;
+                margin-top: 50px;
+                text-align: center;
+            }
+            
+            .next-step, .prev-step{
+                position: relative;
+                background-color: #2ED4E0;
+                font-size: 16px;
+                color: #FFFFFF;
+            }
+            .email-success {
+            color: green;
+            }
+            .button {
+            display: inline-block;
+            padding: 3px 22px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #2dd5df;
+            border: none;
+            border-radius: 6px;
+            margin-bottom: 9px; 
+            }
+    
+            .button:hover, .prev-step:hover, .next-step:hover {
+                background-color: #3e8e41;
+                color:#ffffff
+                }
+    
+            .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+            }
+            @media( min-width : 320px ) and ( max-width : 360px ){
+                .wizard {
+                    width: 90%;
+                    height: auto !important;
+                }
+                span.round-tab {
+                    font-size: 16px;
+                    width: 50px;
+                    height: 50px;
+                    line-height: 50px;
+                }
+                .wizard .nav-tabs > li a {
+                    width: 50px;
+                    height: 50px;
+                }
+                .wizard li.active:after {
+                    content: " ";
+                    position: absolute;
+                    left: 35%;
+                }
+                .next-step{
+                    margin-top:10px;
+                }
+                .nav-tabs li p{
+                    padding-top:60px;
+                    font-size: 16px;
+                    text-align: center;
+                }
+                .connecting-line , .active-line{
+                    top:43%;
+                }
+            }
+            .wrapper, .file-list {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            }
+            .wrapper .file-upload {
+            height: 100px;
+            width: 100px;
+            border-radius: 100px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #FFFFFF;
+            overflow: hidden;
+            background-image: linear-gradient(to bottom, #ee9a1d 50%, #FFFFFF 50%);
+            background-size: 100% 200%;
+            transition: all 1s;
+            color: #FFFFFF;
+            font-size: 50px;
+            }
+            .wrapper .file-upload input[type=file] {
+            height: 100px;
+            width: 100px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+            }
+            .tab-pane h3 {
+                text-align: center;
+            }
+            .wrapper .file-upload:hover {
+            background-position: 0 -100%;
+            color: #ee9a1d;
+            }
+            .sentiment-result {
+                width: 33%;
+                justify-content: center;
+                margin-left: 33%;
+            }
+            .dashboard {
+                padding: 16px;
+                margin-bottom: 20px;
+                background-color: white;
+                font-weight: bold;
+                color: #2dd5df;
+                margin-top: 20px;
+            }
+            .panel-default>.panel-heading {
+                overflow: auto;
+            }
+            .panel-default>.panel-heading+.panel-collapse>.panel-body {
+                text-align: left;
+            }
+            .panel-body>div {
+                padding: 10px;
+            }
+            .panel-group .panel, .file-uploads {
+            margin-bottom: 10px;
+            }
+            .panel-title {
+            font-size: 14px;
+            }
+            .heading-Sev1 {
+            background-color: #ffacac !important;
+            }
+            .heading-Sev2 {
+            background-color: #eebc9b !important;
+            }
+            .heading-Sev3 {
+            background-color: #ffec7e !important;
+            }
+            .heading-Sev4 {
+            background-color: #d6ffbd !important;
+            }
+            .heading-Sev5 {
+            background-color: #57d10c !important;
+            }
+    
+            .label-Sev1 {
+                color: #fb4848;
+            }
+            .label-Sev2 {
+                color: #ffaa71;
+            }
+            .label-Sev3 {
+                color: #efcd08;
+            }
+            .label-Sev4 {
+                color: #559f28;
+            }
+            .label-Sev5 {
+                color: #2e7502;
+            }
+            .indications {
+            text-align: right;
+            font-weight: bold;
+            font-size: 13px;
+            }
+            .indications>div {
+            display: inline;
+            padding: 5px;
+            }
+            th {
+            text-align: center;
+            }
+    
+        </style>
+    </head>
+  <body>
+  <div class="container">
+    <p></p>
+    <p></p>
+    <p></p>
+    <p>Dear Team,</p>
+    <p>Please take necessary actions on below tickets which are likelihood to escalate.</p>
+    <p><b>Note:</b> Refer Escalation Indications.</p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <div class="row">
+      <section>
+        <div>
+            <div>
+              <div class="tab-pane active" id="dashboard">
+                  <div class="indications">
+                    <label>Escalation Indications:</label>
+                    <div class="heading-Sev1">Very Negative</div>
+                    <div class="heading-Sev2">Negative</div>
+                    <div class="heading-Sev3">Neutral</div>
+                    <div class="heading-Sev4">Positive</div>
+                    <div class="heading-Sev5">Very Positive</div>
+                  </div>
+                  <div class="row dashboard">
+                    <div class="col-md-1">Case Number</div>
+                    <div class="col-md-4">Case Title</div>
+                    <div class="col-md-2">Created Date</div>
+                    <div class="col-md-2">Email</div>
+                    <div class="col-md-2">Likelihood to Escalate</div>
+                    <div class="col-md-1">Link</div>
+                  </div>
+                  {% if sentiments %}
+                    {% for key, sentiment in sentiments.items() %}
+                        {% for k, raw in sentiment.items() %}
+                            <div class="row panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading heading-{{ raw['sentiments'][0]['sentiment'] }}">
+                                        <h4 class="panel-title">
+                                            <div role="button" class="panel-row">
+                                                <div class="col-md-1"><a target="_blank" href="{{ api_config['tiket_url'] + k }}">{{ k }}</a></div>
+                                                <div class="col-md-4">{{ values[k]['title'] }}</div>
+                                                <div class="col-md-2">{{ values[k]['created_date'] }}</div>
+                                                <div class="col-md-2">{{ values[k]['email'] }}</div>
+                                                <div class="col-md-2">{{ "{0:.0%}".format(raw['sentiments'][0]['probability']) }}</div>
+                                                <div class="col-md-1"><a target="_blank" href="{{ api_config['tiket_url'] + k }}">Read More</a></div>
+                                            </div>
+                                        </h4>
+                                    </div> 
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <h4>Oops no file uploaded. Go back and upload the file.</h4>
+                {% endif %}
+              </div>
+              <div class="clearfix"></div>
+            </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  </body>
+</html>

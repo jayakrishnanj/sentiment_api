@@ -5,7 +5,7 @@ load_dotenv()
 API_CONFIG = {
   "zendesk": {
     "ticket_id": "id",
-    "tiket_url": "https://acquia.zendesk.com/tickets/",
+    "tiket_url": "https://acquia.zendesk.com/agent/tickets/",
     "created_date": "created_at",
     "email": "submitter",
     "title": "subject",
@@ -42,10 +42,16 @@ EMAIL_MATRIX = {
   "Sev1": "milind.kagdelwar@acquia.com",
   "Sev2": "deep.kachhawa@acquia.com",
   "Sev3": "milind.kagdelwar@acquia.com",
-  "Sev4": "amruta.padale@acquia.com"
+}
+
+EMAIL_INDICATION = {
+  "Sev1": "Too Hot",
+  "Sev2": "Hot",
+  "Sev3": "Warm",
 }
 
 UPLOAD_PATH = 'uploads'
 MAIL_USERNAME = os.getenv('EMAIL')
 MAIL_APP_PASS = os.getenv('KEY')
 DEVELOPMENT_MODE = True
+STATIC_URL = '/static/'

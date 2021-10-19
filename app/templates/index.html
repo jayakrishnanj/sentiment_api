@@ -305,6 +305,10 @@
         var $active = $('.wizard .nav-tabs li.active');
         prevTab($active);
       });
+      $("#get-sentiment-button").click(function (e) {
+        $('#upload-pane').hide();
+        $('#loader-step1').show();
+      });
     });
     function nextTab(elem) {
       $(elem).next().find('a[data-toggle="tab"]').click();
@@ -353,36 +357,42 @@
         </div>
           <div class="tab-content">
             <div class="tab-pane {% if step == 1 %} active {% endif %}" role="tabpanel" id="step1">
-              <h3>Bulk Upload</h3>
-              <form enctype = "multipart/form-data" action = "/uploader" method = "post">
-                <div class="wrapper">
-                    <div class="file-upload">
-                        <input type = "file" name="file" accept=".json"/>
-                        <i class="fa fa-arrow-up"></i>
-                    </div>
-                </div>
-                <input type = "submit" class="button" value = "Upload" />
-                <div>
-                    {% if files %}
-                    <h4>Uploaded Files:</h4>
-                    <div class="file-uploads">
-                        {% for file in files %}
-                            <li>{{ file }}</li>
-                        {% endfor %}
-                    </ol>
-                    </div>
-                    {% endif %}
-                </div>
-              </form>
-              {% if files %}
-              <ul class="list-inline">
-                <li>
-                    <form enctype = "multipart/form-data" action = "/get-sentiment-analysis" method = "post">
-                        <p><input class="button" type = "submit" value = "Get Sentiment Analysis" name="sentiment"/></p>
-                    </form>
-                </li>
-              </ul>
-              {% endif %}
+              <div id="upload-pane">
+                <h3>Bulk Upload</h3>
+                <form enctype = "multipart/form-data" action = "/uploader" method = "post">
+                  <div class="wrapper">
+                      <div class="file-upload">
+                          <input type = "file" name="file" accept=".json"/>
+                          <i class="fa fa-arrow-up"></i>
+                      </div>
+                  </div>
+                  <input type = "submit" class="button" value = "Upload" />
+                  <div>
+                      {% if files %}
+                      <h4>Uploaded Files:</h4>
+                      <div class="file-uploads">
+                          {% for file in files %}
+                              <li>{{ file }}</li>
+                          {% endfor %}
+                      </ol>
+                      </div>
+                      {% endif %}
+                  </div>
+                </form>
+                {% if files %}
+                <ul class="list-inline">
+                  <li>
+                      <form enctype = "multipart/form-data" action = "/get-sentiment-analysis" method = "post">
+                          <p><input id="get-sentiment-button" class="button" type = "submit" value = "Get Sentiment Analysis" name="sentiment"/></p>
+                      </form>
+                  </li>
+                </ul>
+                {% endif %}
+              </div>
+              <div id="loader-step1" style="display:none;">
+                <img src="{{ url_for('static', filename='icons/waiting-icon.gif') }}" alt="Logo">.
+                <p><b>Processing Analysed Data...</b></p>
+              </div>
             </div>
             <div class="tab-pane {% if step == 2 %} active {% endif %}" role="tabpanel" id="step2">
               <h3>Sentiment Analysis Result</h3>
