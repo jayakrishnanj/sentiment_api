@@ -29,14 +29,51 @@ def notify():
             email_values['severity'] = value['sentiments'][0]['sentiment']
             email_values['label'] = value['sentiments'][0]['label']
             email_values['url'] = api_config['tiket_url'] + ticket_id
+            subject = file_data[api_config['title']]
             if email_values['severity'] in email_mapping:
                 to.append(email_mapping[email_values['severity']])
-                subject = '[' + email_values['label'] + '] : Sentiment App notification'
-                response = send_email(subject, email_values, to, cc)
+                subject = '[Sentiment App notification] - ' + subject + ' - (' + config.EMAIL_INDICATION[email_values['severity']] + ')'
+                response = send_single_email(subject, email_values, to, cc)
     return response
 
+def format_email_values(sentiments, api_config, file_info):
+    result = {}
+    for file_key, values in sentiments.items():
+        for ticket_id, value in values.items():
+            result[ticket_id] = {}
+            file_data = file_info[file_key][ticket_id]
+            result[ticket_id]['title'] = file_data[api_config['title']]
+            if 'email' in api_config:
+                if 'notification_key' in api_config:
+                    result[ticket_id]['email'] = file_data[api_config['email']][api_config['notification_key']]
+                else:
+                    result[ticket_id]['email'] = file_data[api_config['email']]
+            result[ticket_id]['created_date'] = file_data[api_config['created_date']]
+    return result
+
+# Send bulk Email utility.
+def send_bulk_email(sentiments, api_config, file_info):
+    status = True
+    to = []
+    cc = []
+    subject = 'Sentiment App notification - Collaborated'
+    email_mapping = config.EMAIL_MATRIX
+    # TODO: Remove this line
+    to = [email_mapping['Sev1']]
+    values = format_email_values(sentiments, api_config, file_info)
+    body = render_template('bulk-email.html', sentiments = sentiments, api_config = api_config, values = values)
+    send_email(subject, body, to, cc)
+    return status
+
+# Send Single Email utility.
+def send_single_email(subject, values, to, cc):
+    status = True
+    body = render_template('email.html', data=values)
+    send_email(subject, body, to, cc)
+    return status
+
 # Send Email utility.
-def send_email(subject, values, to, cc):
+def send_email(subject, body, to, cc):
     status = True
     try:
         msg = EmailMessage()
@@ -45,7 +82,6 @@ def send_email(subject, values, to, cc):
         msg['To'] = ", ".join(to)
         if not cc:
             msg['cc'] = ", ".join(cc)
-        body = render_template('email.html', data=values)
         msg.set_content(body, subtype='html')
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(config.MAIL_USERNAME, config.MAIL_APP_PASS) 
