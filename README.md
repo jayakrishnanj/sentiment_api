@@ -10,9 +10,16 @@ Setting up local Environment for notification
     Ex.: EMAIL="xyz@gmail.com"
         KEY="abcd"
 
-Install dependecies manually:
------------------------------
+Create Upload folder
+--------------------
+Create upload folder in app folder. `Note:` This is temporary, it will be fixed in future release.
 
+
+There are two ways you can install application:
+===============================================
+
+Manual Approach: Install dependecies manually:
+----------------------------------------------
 Install python3 and pip3 via homebrew
 
 Install all the dependencies:
@@ -24,7 +31,7 @@ Run the app.
 1. Go to app folder
 2. Run `python3 main.py`
 
-Install and Run using docker:
+Docker Approach: Install and Run using docker:
 -----------------------------
 1. Make sure docker is install in system and running
 2. Go to sentiment_api folder
