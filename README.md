@@ -30,6 +30,7 @@ Run the app.
 
 1. Go to app folder
 2. Run `python3 main.py`
+3. Goto  `/sentiment-application`
 
 Docker Approach: Install and Run using docker
 -----------------------------
@@ -38,8 +39,8 @@ Docker Approach: Install and Run using docker
 3. Run `docker build -t sentiment-app:latest .`
 4. Run `docker run -it sentiment-app`
 5. Run app in docker container `docker run -it -d -p 8000:8000 sentiment-app`
-6. Run `docker stop` to exit.
-
+6. Goto  `/sentiment-application`
+7. Run `docker stop` to exit.
 
 Note: Email notification
 ------------------------
