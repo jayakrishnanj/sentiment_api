@@ -3,12 +3,13 @@ from flask import Blueprint
 import os
 import config
 import glob
+from urllib.parse import urlencode
 
 ticketing_api = Blueprint('ticketing_api', __name__)
 
 @ticketing_api.route('/get-analysed-data', methods = ['GET'])
 def process_json():
-    list_of_files = glob.glob(config.UPLOAD_PATH + '/*') # * means all if need specific format then *.csv
+    list_of_files = glob.glob(config.UPLOAD_PATH + '/*')
     file = max(list_of_files, key=os.path.getctime)
     result = {'result': {}, 'data': {}}
     data = load_json_file_data(file)
