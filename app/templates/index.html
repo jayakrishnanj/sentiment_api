@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
   <style>
       .wizard {
           background: #f1f1f1;
@@ -284,6 +285,9 @@
       th {
         text-align: center;
       }
+      #get-sentiment-button {
+        margin-top: 20px;
+      }
 
   </style>
   <script>
@@ -306,9 +310,13 @@
         prevTab($active);
       });
       $("#get-sentiment-button").click(function (e) {
-        $('#upload-pane').hide();
+        $('#service-pane').hide();
         $('#loader-step1').show();
       });
+
+      $('#sentiment-table').DataTable({
+         "paging": true // false to disable pagination (or any other option)
+        });
     });
     function nextTab(elem) {
       $(elem).next().find('a[data-toggle="tab"]').click();
@@ -332,7 +340,7 @@
 <span class="round-tab">
 1
 </span>
-                <p>File Upload</p>
+                <p>Ticketing Service</p>
               </a>
             </li>
             <li role="presentation" class="stepactive2 {% if step == 2 %} active {% else %} disabled {% endif %}">
@@ -341,7 +349,7 @@
 <span class="round-tab">
 2
 </span>
-                <p>	Sentiment Analysis</p>
+                <p>Sentiment Analysis</p>
               </a>
             </li>
             <li role="presentation" class="stepactive3 disabled">
@@ -357,37 +365,21 @@
         </div>
           <div class="tab-content">
             <div class="tab-pane {% if step == 1 %} active {% endif %}" role="tabpanel" id="step1">
-              <div id="upload-pane">
-                <h3>Bulk Upload</h3>
-                <form enctype = "multipart/form-data" action = "/uploader" method = "post">
-                  <div class="wrapper">
-                      <div class="file-upload">
-                          <input type = "file" name="file" accept=".json"/>
-                          <i class="fa fa-arrow-up"></i>
-                      </div>
-                  </div>
-                  <input type = "submit" class="button" value = "Upload" />
-                  <div>
-                      {% if files %}
-                      <h4>Uploaded Files:</h4>
-                      <div class="file-uploads">
-                          {% for file in files %}
-                              <li>{{ file }}</li>
-                          {% endfor %}
-                      </ol>
-                      </div>
-                      {% endif %}
-                  </div>
-                </form>
-                {% if files %}
+              <div id="service-pane">
+                <h3>Select Service</h3>
                 <ul class="list-inline">
                   <li>
                       <form enctype = "multipart/form-data" action = "/get-sentiment-analysis" method = "post">
-                          <p><input id="get-sentiment-button" class="button" type = "submit" value = "Get Sentiment Analysis" name="sentiment"/></p>
+                        <select class="form-control" name="services" id="services" required>
+                          <option selected>- Select -</option>
+                          {% for key, value in services.items() %}
+                            <option value="{{ key }}">{{ value }}</option>
+                          {% endfor %}
+                        </select>
+                        <input id="get-sentiment-button" class="button" type = "submit" value = "Get Sentiment Analysis" name="sentiment"/>
                       </form>
                   </li>
                 </ul>
-                {% endif %}
               </div>
               <div id="loader-step1" style="display:none;">
                 <img src="{{ url_for('static', filename='icons/waiting-icon.gif') }}" alt="Logo">.
@@ -397,9 +389,7 @@
             <div class="tab-pane {% if step == 2 %} active {% endif %}" role="tabpanel" id="step2">
               <h3>Sentiment Analysis Result</h3>
               {% if sentiments %}
-                {% for key, sentiment in sentiments.items() %}
-                    <span>File: <b>{{ key }}</b></span>
-                    <table class="table table-striped">
+                    <table class="table table-striped" id="sentiment-table">
                       <thead>
                         <tr>
                           <th scope="col">#</th>
@@ -409,19 +399,18 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% set count = namespace(value=1) %}
-                      {% for k, raw in sentiment.items() %}
+                      {% set count = namespace(value=1) %}
+                      {% for k, raw in sentiments.items() %}
                         <tr>
                           <th scope="row">{{ count.value }}</th>
                           <td><a target="_blank" href="{{ api_config['tiket_url'] + k }}">{{ k }}</a></td>
-                          <td>{{ raw['sentiments'][0]['label'] }}</td>
-                          <td>{{ "{0:.0%}".format(raw['sentiments'][0]['probability']) }}</td>
+                          <td>{{ raw['label'] }}</td>
+                          <td>{{ "{0:.0%}".format(raw['probability']) }}</td>
                         </tr>
                         {% set count.value = count.value + 1 %}
                       {% endfor %}
                       </tbody>
                     </table>
-                {% endfor %}
                 {% if notification == 1 %}
                     <h4 class="email-success">Email sent successfully.</h4>
                 {% else %}
@@ -454,35 +443,33 @@
                 </div>
                 {% if sentiments %}
                 {% for key, sentiment in sentiments.items() %}
-                  {% for k, raw in sentiment.items() %}
-                      <div class="row panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="panel panel-default">
-                          <div class="panel-heading heading-{{ raw['sentiments'][0]['sentiment'] }}" role="tab" id="heading{{ k }}">
-                            <h4 class="panel-title">
-                              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ k }}" aria-expanded="false" aria-controls="collapse{{ k }}" class="collapsed">
-                                <div class="col-md-2">{{ k }}</div>
-                                <div class="col-md-4">{{ values[k]['title'] }}</div>
-                                <div class="col-md-2">{{ values[k]['created_date'] }}</div>
-                                <div class="col-md-2">{{ values[k]['email'] }}</div>
-                                <div class="col-md-2">{{ "{0:.0%}".format(raw['sentiments'][0]['probability']) }}</div>
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="collapse{{ k }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ k }}" aria-expanded="false" style="height: 0px;">
-                            <div class="panel-body">
-                              <div class="description">
-                                <label class="label-{{ raw['sentiments'][0]['sentiment'] }}">Description</label>
-                                <div>{{ values[k]['description'] }}</div>
-                              </div>
-                              <div class="comment">
-                                <label class="label-{{ raw['sentiments'][0]['sentiment'] }}">Comments</label>
-                                <div>{{ values[k]['comment'] }}</div>
-                              </div>
+                  <div class="row panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                      <div class="panel-heading heading-{{ sentiment['sentiment'] }}" role="tab" id="heading{{ key }}">
+                        <h4 class="panel-title">
+                          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ key }}" aria-expanded="false" aria-controls="collapse{{ key }}" class="collapsed">
+                            <div class="col-md-2">{{ key }}</div>
+                            <div class="col-md-4">{{ values[key]['title'] }}</div>
+                            <div class="col-md-2">{{ values[key]['created_date'] }}</div>
+                            <div class="col-md-2">{{ values[key]['email'] }}</div>
+                            <div class="col-md-2">{{ "{0:.0%}".format(sentiment['probability']) }}</div>
+                          </a>
+                        </h4>
+                      </div>
+                      <div id="collapse{{ key }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ key }}" aria-expanded="false" style="height: 0px;">
+                        <div class="panel-body">
+                          <div class="description">
+                            <label class="label-{{ sentiment['sentiment'] }}">Description</label>
+                              <div>{{ values[key]['description'] }}</div>
                             </div>
+                          <div class="comment">
+                            <label class="label-{{ sentiment['sentiment'] }}">Comments</label>
+                          <div>{{ values[key]['comment'] }}</div>
                           </div>
                         </div>
                       </div>
-                  {% endfor %}
+                    </div>
+                  </div>
                 {% endfor %}
                 {% else %}
                   <h4>Oops no file uploaded. Go back and upload the file.</h4>

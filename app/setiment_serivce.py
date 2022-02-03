@@ -1,30 +1,26 @@
 import json
 from flask import request, Blueprint
 from transformers import pipeline
+from cache.FlaskCacheFactory import cache
 
 sentiment_api = Blueprint('sentiment_api', __name__)
 
 nlp = pipeline(task='sentiment-analysis',
                model='nlptown/bert-base-multilingual-uncased-sentiment')
 
-@sentiment_api.route('/sentiment-request', methods=['GET', 'POST'])
-def data():
+@sentiment_api.route('/sentiment-service', methods=['POST'])
+def get_sentiment():
     batch_size = request.args.get('batch_size')
     try:
         jsonObject = json.loads(request.form['data'])
         result = {}
-        for file_key, file_data in jsonObject.items():
-            result[file_key] = {}
-            for key, value in file_data.items():
-                i = 0
-                result[file_key][key] = {'sentiments':[]}
-                for v in value:
-                    result[file_key][key]['sentiments'].insert(i, analyze_sentiment(v))
-                    i = i + 1
-                # sorted = sorted(result[file_key][key]['sentiments'].items(), key=lambda x: x[1]) 
+        for key, value in jsonObject.items():
+            # TODO: Change the approach here.
+            value = value[:512]
+            result[key] = analyze_sentiment(value)
     except Exception as e:
         result = str(e)
-    return json.dumps(result)
+    return result
 
 # Sentiment analysis method.
 def analyze_sentiment(text):
@@ -54,4 +50,4 @@ def analyze_sentiment(text):
     prob = result[0]['score']
 
     # Format and return results
-    return {'sentiment': sent, 'probability': prob, 'label': label}
+    return {'sentiment': sent, 'probability': prob, 'label': label, 'value': text }

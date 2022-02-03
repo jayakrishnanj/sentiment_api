@@ -3,26 +3,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_CONFIG = {
-  "zendesk": {
+  "ZenDesk": {
+    "api_endpoint": "https://acquia.zendesk.com/api/v2/",
+    "group_id": "360004942734",
     "ticket_id": "id",
     "tiket_url": "https://acquia.zendesk.com/agent/tickets/",
     "created_date": "created_at",
     "email": "submitter",
     "title": "subject",
-    "detector": "url",
-    "comments": "comments",
     "description": "description",
     "status": "status",
     "comment_body": "plain_body",
-    "filters": {
-        "status": ["open"]
-      },
-     "notification_users": {
-        "to": ["assignee"],
-        "cc": ["collaborator"]
-      },
+    "notification_users": {
+      "to": ["assignee"],
+      "cc": ["collaborator"]
+  },
     "notification_key" : "email",
-    #"tag_key": "tags"
   },
   "jira" : {
     "ticket_id": "id",

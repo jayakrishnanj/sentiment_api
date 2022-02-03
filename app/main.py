@@ -1,15 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request
 from setiment_serivce import sentiment_api
 from ticketing_service import ticketing_api
 from notification_service import notification_api
-import os
+from cache.FlaskCacheFactory import FlaskCacheFactory
 import config
 import requests
 import json
-from datetime import datetime
+import plugins.ticketing as ticketing
 
 app = Flask(__name__)
+
+# Register the app with cache factory.
+cacheFactory = FlaskCacheFactory(3000)
+cacheFactory.register(app)
+
 app.register_blueprint(sentiment_api)
 app.register_blueprint(ticketing_api)
 app.register_blueprint(notification_api)
@@ -20,69 +24,49 @@ def get_root():
 
 @app.route('/sentiment-application')
 def index_file():
-    try:
-     files = os.listdir(config.UPLOAD_PATH)
-    except:
-     files = [] 
-    return render_template('index.html', files=files, step=1)
-	
-@app.route('/uploader', methods = ['POST'])
-def upload_file():
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-    if filename != '':
-        uploaded_file.save(os.path.join(config.UPLOAD_PATH, filename))
-    return redirect(url_for('index_file'))
+    services = ticketing.get_services()
+    return render_template('index.html', services=services, step=1)
 
 @app.route('/get-sentiment-analysis', methods = ['POST'])
 def analyse_result():
     if request.form['sentiment']:
-        try:
-            files = os.listdir(config.UPLOAD_PATH)
-        except:
-            files = [] 
-        result = requests.get(request.host_url + 'get-analysed-data')
-        result = json.loads(result.content)
+        service = request.form['services']
+        result = requests.get(request.host_url + 'ticketing-service', params={'name': service})
+        result = result.json()
         payload = {
-            'data': json.dumps(result['result']),
+            'data': json.dumps(result['comments']),
         }
-        response = requests.post(request.host_url + 'sentiment-request', data = payload)
+        response = requests.post(request.host_url + 'sentiment-service', data = payload)
         if response.status_code == 200 and response.content:
             payload = {
-                'data': response.content,
-                'file_data': json.dumps(result['data']),
-                'api': result['api']
+                'sentiments': response.content,
+                'service': service,
+                'tickets': json.dumps(result['tickets']),
             }
-            api_config = config.API_CONFIG[result['api']]
+            api_config = config.API_CONFIG[service]
             values = format_result(payload)
-            notification_response = requests.post(request.host_url + 'send-notification', data = payload)
-    return render_template('index.html', values = values, sentiments=json.loads(response.content), notification = 1, step=2, files = files, api_config=api_config)
+            services = ticketing.get_services()
+            # notification_response = requests.post(request.host_url + 'send-notification', data = payload)
+    return render_template('index.html', values = values, sentiments=json.loads(response.content), notification = 1, step=2, api_config=api_config, services=services)
 
 def format_result(payload):
-    jsonObject = json.loads(payload['data'])
-    file_info = json.loads(payload['file_data'])
-    api = payload['api']
-    api_config = config.API_CONFIG[api]
+    jsonObject = json.loads(payload['sentiments'])
+    tickets = json.loads(payload['tickets'])
+    service = payload['service']
+    api_config = config.API_CONFIG[service]
     result = {}
-    for file_key, values in jsonObject.items():
-        for ticket_id, value in values.items():
-            result[ticket_id] = {}
-            file_data = file_info[file_key][ticket_id]
-            result[ticket_id]['description'] = file_data[api_config['description']]
-            result[ticket_id]['title'] = file_data[api_config['title']]
-            if 'email' in api_config:
-                if 'notification_key' in api_config:
-                    result[ticket_id]['email'] = file_data[api_config['email']][api_config['notification_key']]
-                else:
-                    result[ticket_id]['email'] = file_data[api_config['email']]
-            result[ticket_id]['created_date'] = file_data[api_config['created_date']]
-            comments = file_data[api_config['comments']]
-            if comments:
-                last_comment = comments[-1]
-                if api_config['comment_body']:   
-                    result[ticket_id]['comment'] = last_comment[api_config['comment_body']]
-                else:
-                    result[ticket_id]['comment'] = last_comment
+    for values in tickets:
+        id = str(values['id'])
+        result[id] = {}
+        result[id]['description'] = values[api_config['description']]
+        result[id]['title'] = values[api_config['title']]
+        result[id]['created_date'] = values[api_config['created_date']]
+        result[id]['comment'] = jsonObject[id]['value']
+        #if 'email' in api_config:
+         #   if 'notification_key' in api_config:
+                # result[id]['email'] = values[api_config['email']][api_config['notification_key']]
+          #  else:
+                # result[id]['email'] = values[api_config['email']]
     return result
 
 if __name__ == '__main__':
